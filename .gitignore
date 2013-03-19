@@ -1,0 +1,15 @@
+# compiled python modules
+*.pyc
+
+# setuptools folders
+/dist/
+/build/
+
+# virtualenv
+/venv/
+
+# Python egg metadata, regenerated from source files by setuptools
+/*.egg-info
+
+# emacs backup
+*~
