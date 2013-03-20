@@ -99,7 +99,7 @@ def handle_line(state, parse_results):
 
 def handle_lines(lines, state):
     parser = logline()
-    for line in fileinput.input():
+    for line in lines:
         try:
             handle_line(state, parser.parseString(line))
         except ParseException as e:
