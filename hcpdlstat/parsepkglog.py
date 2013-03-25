@@ -3,7 +3,7 @@
 # Copyright (c) 2013 Washington University School of Medicine
 # Author: Kevin A. Archie <karchie@wustl.edu>
 
-import fileinput, re
+import argparse, datetime, fileinput, os, re, ConfigParser
 from collections import defaultdict, Counter
 from pyparsing import Suppress, Word, alphanums, delimitedList, nums, printables, ParseException
 from bundles import g1, g5, g20
@@ -107,7 +107,8 @@ def handle_lines(lines, state):
             raise
 
 def init_state():
-    return {'g1': 0, 'g5': 0, 'g20': 0,
+    return {'date':'',
+            'g1': 0, 'g5': 0, 'g20': 0,
             'g1_files': 0, 'g5_files': 0, 'g20_files': 0,
             'files': 0, 'bytes': 0,
             'resources': defaultdict(lambda: defaultdict(Counter)),
@@ -126,7 +127,59 @@ def display_state(state):
             for f, count in counter.iteritems():
                 print ' ', project, resource, f, count
 
+def array_state(state):
+    return [str(state[f]) if f else ''
+            for f in ['date',
+                      'g1', 'g1_files',
+                      'g5', 'g5_files',
+                      'g20', 'g20_files',
+                      None,
+                      'preproc', None,
+                      'unproc', None]]
+    
+def build_log_path(state, dir, name, s):
+    """Builds the full pathname of a log file from the log directory,
+    the log basename, and the date (today, yesterday, or yyyy-mm-dd)."""
+    if 'today' == s:
+        state['date'] = datetime.date.today().isoformat()
+        return os.path.join(dir, name)
+    elif 'yesterday' == s:
+        date = (datetime.date.today()-datetime.timedelta(days=1)).isoformat()
+        state['date'] = date
+        return os.path.join(dir, name + '.' + date)
+    else:
+        state['date'] = s
+        return os.path.join(dir, name + '.' + s)
+
 def main():
+    config = ConfigParser.ConfigParser()
+    config.read(['site.cfg', os.path.expanduser('~/.hcpdlstat.cfg')])
+    get_config = lambda k: config.get('parsepkglog',k)
+    
+    argparser = argparse.ArgumentParser(description='Extract statistics from XNAT package request log.')
+    argparser.add_argument('-d', '--date',
+                           help='specify the log date (today, yesterday, or yyyy-mm-dd)',
+                           metavar='DATE',
+                           type=lambda s: build_log_path(state,
+                                                         get_config('logdir'),
+                                                         get_config('logname'),
+                                                         s),
+                           dest='logfile')
+    argparser.add_argument('-c', '--csv',
+                           help='produce CSV-formatted output',
+                           action='store_true')
+    argparser.add_argument('logfiles', nargs='*',
+                           metavar='[LOG-FILE-PATH ...]')
+    args = argparser.parse_args()
+    if args.logfile:
+        with open(args.logfile) as f:
+            lines = f.readlines()
+    else:
+        lines = fileinput.input(files=args.logfiles)
+
     state = init_state()
-    handle_lines(fileinput.input(), state)
-    display_state(state)
+    handle_lines(lines, state)
+    if args.csv:
+        print ','.join(array_state(state))
+    else:
+        display_state(state)
