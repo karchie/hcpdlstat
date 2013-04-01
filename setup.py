@@ -20,9 +20,11 @@ setup(name='hcpdlstat',
         ],
       packages=['hcpdlstat'],
       entry_points = {
-        'console_scripts':['parsepkglog=hcpdlstat.parsepkglog:main']
+          'console_scripts':['parsepkglog=hcpdlstat.parsepkglog:main',
+                             'querystatscollector=hcpdlstat.querystatscollector:main']
         },
       install_requires=[
+        'PyMySQL',
         'pyparsing==1.5.7',
         ],
       zip_safe=False)
