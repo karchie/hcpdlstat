@@ -21,7 +21,8 @@ setup(name='hcpdlstat',
       packages=['hcpdlstat'],
       entry_points = {
           'console_scripts':['parsepkglog=hcpdlstat.parsepkglog:main',
-                             'querystatscollector=hcpdlstat.querystatscollector:main']
+                             'querystatscollector=hcpdlstat.querystatscollector:main',
+                             'geolocate=hcpdlstat.geolocate:main']
         },
       install_requires=[
         'PyMySQL',
