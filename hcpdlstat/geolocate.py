@@ -40,7 +40,7 @@ def column_value(k, entry):
         return 'now()'
     else:
         v = entry[k]
-        return u"'{0}'".format(v) if v else 'NULL'
+        return u"'{0}'".format(str(v).replace("'","''")) if v else 'NULL'
 
 def insert_geo(db, geo):
     cur = db.cursor()
