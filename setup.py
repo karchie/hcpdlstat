@@ -20,11 +20,11 @@ setup(name='hcpdlstat',
         ],
       packages=['hcpdlstat'],
       entry_points = {
-          'console_scripts':['parsepkglog=hcpdlstat.parsepkglog:main',
-                             'querystatscollector=hcpdlstat.querystatscollector:main',
-                             'geolocate=hcpdlstat.geolocate:main']
+          'console_scripts':['geolocate=hcpdlstat.geolocate:main',
+                             'update_dl_stats=hcpdlstat.update:main']
         },
       install_requires=[
+        'openpyxl',
         'PyMySQL',
         'pyparsing==1.5.7',
         ],

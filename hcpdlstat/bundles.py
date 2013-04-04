@@ -10,3 +10,6 @@ g5 = {'100307', '114924', '125525', '138231', '159239'}
 
 g1 = {'100307'}
 
+counted_resources = {
+    'g20_avg':['HCP_Q1','Q1','HCP_Q1-GroupAvgUnrelated20.zip']
+}
